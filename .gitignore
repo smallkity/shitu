@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+*.local
+.dev.stderr.log
+.dev.stdout.log
+.preview.stderr.log
+.preview.stdout.log
+.snow
