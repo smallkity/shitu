@@ -1,46 +1,39 @@
 import { useEffect, useState } from 'react'
-import { ImageOff } from 'lucide-react'
-import type { PhotoRecord } from '../types'
+import { getPhotoUrl } from '../lib/repository'
 
-interface PhotoImageProps {
-  photo: PhotoRecord
-  alt?: string
+export function PhotoImage({
+  filePath,
+  alt,
+  className,
+}: {
+  filePath: string
+  alt: string
   className?: string
-}
-
-export function PhotoImage({ photo, alt = photo.fileName, className = '' }: PhotoImageProps) {
-  const [src, setSrc] = useState<string>()
-  const [failed, setFailed] = useState(false)
+}) {
+  const [src, setSrc] = useState<string>('')
 
   useEffect(() => {
-    setFailed(false)
-    setSrc(undefined)
-    try {
-      const objectUrl = URL.createObjectURL(photo.blob)
-      setSrc(objectUrl)
-      return () => URL.revokeObjectURL(objectUrl)
-    } catch (e) {
-      console.error('[拾图] 创建图片URL失败:', e)
-      setFailed(true)
+    const url = getPhotoUrl(filePath)
+    setSrc(url)
+    return () => {
+      // convertFileSrc 返回的是原生协议 URL，不需要 revoke
     }
-  }, [photo.blob])
+  }, [filePath])
 
-  if (failed || !src) {
-    return (
-      <div className={`photo-image-fallback ${className}`}>
-        <ImageOff size={24} strokeWidth={1.5} />
-        <span>无法预览</span>
-      </div>
-    )
+  if (!src) {
+    return <div className={`${className ?? ''} photo-placeholder`} />
   }
 
   return (
     <img
-      className={className}
       src={src}
       alt={alt}
+      className={className}
       loading="lazy"
-      onError={() => setFailed(true)}
+      onError={(e) => {
+        console.error('[拾图] 图片加载失败:', filePath)
+        ;(e.target as HTMLImageElement).style.opacity = '0.2'
+      }}
     />
   )
 }

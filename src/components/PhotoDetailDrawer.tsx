@@ -80,7 +80,11 @@ export function PhotoDetailDrawer({
           <X size={20} />
         </button>
         <div className="detail-preview">
-          <PhotoImage photo={photo} />
+          <PhotoImage
+            filePath={photo.filePath}
+            alt={photo.fileName}
+            className="detail-preview__img"
+          />
         </div>
         <div className="detail-body">
           <div className="detail-title-row">

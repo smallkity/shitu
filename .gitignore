@@ -7,3 +7,7 @@ dist
 .preview.stderr.log
 .preview.stdout.log
 .snow
+android/
+android/app/build
+*.keystore
+!debug.keystore

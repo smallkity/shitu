@@ -167,7 +167,15 @@ function App() {
               </p>
             </div>
             <div className="hero-actions">
-              <ImportButton onImported={showToast} />
+              <ImportButton
+                onImported={(r) =>
+                  showToast(
+                    `成功导入 ${r.imported} 张照片${
+                      r.skipped > 0 ? `，跳过 ${r.skipped} 张已存在` : ""
+                    }`
+                  )
+                }
+              />
               <button
                 className="manage-tags-button"
                 onClick={() => setActiveView("tags")}

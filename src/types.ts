@@ -1,11 +1,11 @@
 export interface PhotoRecord {
   id: string
   fileName: string
+  filePath: string
   mimeType: string
   size: number
   width: number
   height: number
-  blob: Blob
   capturedAt?: number
   importedAt: number
   lastModified: number
