@@ -34,6 +34,9 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
       - name: Install Capacitor CLI
         run: npm install @capacitor/cli @capacitor/core @capacitor/android @capacitor/camera @capacitor/filesystem @capacitor/preferences
 
