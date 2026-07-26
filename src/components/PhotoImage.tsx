@@ -13,10 +13,16 @@ export function PhotoImage({ photo, alt = photo.fileName, className = '' }: Phot
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
-    const objectUrl = URL.createObjectURL(photo.blob)
-    setSrc(objectUrl)
     setFailed(false)
-    return () => URL.revokeObjectURL(objectUrl)
+    setSrc(undefined)
+    try {
+      const objectUrl = URL.createObjectURL(photo.blob)
+      setSrc(objectUrl)
+      return () => URL.revokeObjectURL(objectUrl)
+    } catch (e) {
+      console.error('[拾图] 创建图片URL失败:', e)
+      setFailed(true)
+    }
   }, [photo.blob])
 
   if (failed || !src) {
