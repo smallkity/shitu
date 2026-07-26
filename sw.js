@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shitu-shell-v1'
+const CACHE_NAME = 'shitu-shell-v3'
 const BASE = '/shitu/'
 const APP_SHELL = [BASE, BASE + 'index.html', BASE + 'manifest.webmanifest']
 
@@ -23,13 +23,14 @@ self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url)
   if (requestUrl.origin !== self.location.origin) return
 
+  // 网络优先策略：先尝试网络，失败再用缓存
   event.respondWith(
-    caches.match(event.request).then((cached) => cached ?? fetch(event.request).then((response) => {
+    fetch(event.request).then((response) => {
       if (response.ok && event.request.destination !== 'image') {
         const copy = response.clone()
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy))
       }
       return response
-    }).catch(() => caches.match(BASE + 'index.html'))),
+    }).catch(() => caches.match(event.request).then((cached) => cached ?? caches.match(BASE + 'index.html'))),
   )
 })
