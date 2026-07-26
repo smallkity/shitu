@@ -1,5 +1,6 @@
 const CACHE_NAME = 'shitu-shell-v1'
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest']
+const BASE = '/shitu/'
+const APP_SHELL = [BASE, BASE + 'index.html', BASE + 'manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -29,6 +30,6 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy))
       }
       return response
-    }).catch(() => caches.match('/index.html'))),
+    }).catch(() => caches.match(BASE + 'index.html'))),
   )
 })
