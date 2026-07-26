@@ -13,43 +13,61 @@ export async function importPhotoFiles(files: File[]): Promise<ImportResult> {
   const now = Date.now();
 
   for (const file of files) {
-    if (!file.type.startsWith("image/")) {
+    // 移动端某些图片 type 可能为空，用扩展名兜底
+    const isImage =
+      file.type.startsWith("image/") ||
+      /\.(jpe?g|png|webp|gif|bmp|svg|heic|heif)$/i.test(file.name);
+    if (!isImage) {
       result.failed.push({
-        fileName: file.name,
+        fileName: file.name || "未知文件",
         reason: "不是可识别的图片格式",
       });
       continue;
     }
 
-    const existing = await db.photos
-      .where("[fileName+size+lastModified]")
-      .equals([file.name, file.size, file.lastModified])
-      .first();
+    try {
+      const existing = await db.photos
+        .where("[fileName+size+lastModified]")
+        .equals([file.name, file.size, file.lastModified])
+        .first();
 
-    if (existing) {
-      result.skipped += 1;
-      continue;
+      if (existing) {
+        result.skipped += 1;
+        continue;
+      }
+    } catch {
+      // 查询失败则跳过去重检查，继续导入
     }
 
     try {
-      const { width, height } = await readImageDimensions(file);
+      let width = 0;
+      let height = 0;
+      try {
+        const dims = await readImageDimensions(file);
+        width = dims.width;
+        height = dims.height;
+      } catch {
+        // 尺寸读取失败不阻止导入
+      }
+
       const photo: PhotoRecord = {
         id: createId("photo"),
-        fileName: file.name,
-        mimeType: file.type,
+        fileName: file.name || `照片_${Date.now()}.jpg`,
+        mimeType: file.type || "image/jpeg",
         size: file.size,
         width,
         height,
         blob: file,
         importedAt: now,
-        lastModified: file.lastModified,
+        lastModified: file.lastModified || now,
       };
 
       await db.photos.add(photo);
       result.imported += 1;
-    } catch {
+    } catch (error) {
+      console.error("[拾图] 导入失败:", file.name, error);
       result.failed.push({
-        fileName: file.name,
+        fileName: file.name || "未知文件",
         reason: "图片无法读取或格式不受支持",
       });
     }
