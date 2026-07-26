@@ -1,0 +1,28 @@
+{
+  "name": "拾图 · 照片管理",
+  "short_name": "拾图",
+  "description": "用标签整理你的照片和记忆",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "/shitu/",
+  "scope": "/shitu/",
+  "display": "standalone",
+  "background_color": "#f7f5f1",
+  "theme_color": "#bd704e",
+  "orientation": "portrait-primary",
+  "categories": ["photo", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
