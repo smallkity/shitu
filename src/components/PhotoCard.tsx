@@ -1,4 +1,4 @@
-import { Edit3, MoreHorizontal, Trash2 } from "./Icons";
+import { Edit3, Maximize2, MoreHorizontal, Trash2 } from "./Icons";
 import { PhotoImage } from "./PhotoImage";
 import { formatDate } from "../lib/photoMetadata";
 import type { PhotoRecord, Tag } from "../types";
@@ -7,16 +7,17 @@ interface PhotoCardProps {
   photo: PhotoRecord;
   tags: Tag[];
   onOpen: () => void;
+  onViewer: () => void;
   onDelete: () => void;
 }
 
-export function PhotoCard({ photo, tags, onOpen, onDelete }: PhotoCardProps) {
+export function PhotoCard({ photo, tags, onOpen, onViewer, onDelete }: PhotoCardProps) {
   return (
     <article className="photo-card">
       <button
         className="photo-card-image"
-        onClick={onOpen}
-        aria-label={`查看 ${photo.fileName}`}
+        onClick={onViewer}
+        aria-label={`大图查看 ${photo.fileName}`}
       >
         <PhotoImage
           filePath={photo.filePath}
@@ -42,6 +43,14 @@ export function PhotoCard({ photo, tags, onOpen, onDelete }: PhotoCardProps) {
             aria-label="编辑标签"
           >
             <Edit3 size={16} />
+          </button>
+          <button
+            className="icon-button subtle"
+            onClick={onViewer}
+            aria-label="大图浏览"
+            title="大图浏览"
+          >
+            <Maximize2 size={15} />
           </button>
         </div>
         <div className="photo-card-tags">

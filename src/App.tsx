@@ -3,6 +3,7 @@ import {
   Filter,
   Images,
   LayoutGrid,
+  Maximize2,
   Search,
   Settings2,
   SlidersHorizontal,
@@ -14,6 +15,7 @@ import { FilterPanel } from "./components/FilterPanel";
 import { ImportButton } from "./components/ImportButton";
 import { PhotoCard } from "./components/PhotoCard";
 import { PhotoDetailDrawer } from "./components/PhotoDetailDrawer";
+import { PhotoViewer } from "./components/PhotoViewer";
 import { InstallAppButton } from "./components/InstallAppButton";
 import { TagManager } from "./components/TagManager";
 import { useLibrary } from "./hooks/useLibrary";
@@ -29,6 +31,7 @@ function App() {
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoRecord | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [toast, setToast] = useState<string>();
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   const visiblePhotos = useMemo(
     () => filterPhotos(photos, photoTags, tags, tagGroups, search, selection),
@@ -219,6 +222,15 @@ function App() {
                     ? "读取中…"
                     : `${visiblePhotos.length} / ${photos.length} 张照片`}
                 </span>
+                <button
+                  className="view-button"
+                  aria-label="大图浏览"
+                  onClick={() => visiblePhotos.length > 0 && setViewerIndex(0)}
+                  disabled={visiblePhotos.length === 0}
+                  title="大图浏览筛选结果"
+                >
+                  <Maximize2 size={17} />
+                </button>
                 <button className="view-button active" aria-label="网格视图">
                   <LayoutGrid size={17} />
                 </button>
@@ -246,7 +258,7 @@ function App() {
                   />
                 ) : (
                   <div className="photo-grid">
-                    {visiblePhotos.map((photo) => (
+                    {visiblePhotos.map((photo, index) => (
                       <PhotoCard
                         key={photo.id}
                         photo={photo}
@@ -254,6 +266,7 @@ function App() {
                           photoTagsMap.get(photo.id)?.includes(tag.id)
                         )}
                         onOpen={() => setSelectedPhoto(photo)}
+                        onViewer={() => setViewerIndex(index)}
                         onDelete={() => handleDelete(photo)}
                       />
                     ))}
@@ -300,6 +313,13 @@ function App() {
         onClose={() => setSelectedPhoto(null)}
         onDelete={() => selectedPhoto && handleDelete(selectedPhoto)}
       />
+      {viewerIndex !== null && visiblePhotos.length > 0 && (
+        <PhotoViewer
+          photos={visiblePhotos}
+          startIndex={Math.min(viewerIndex, visiblePhotos.length - 1)}
+          onClose={() => setViewerIndex(null)}
+        />
+      )}
       {toast && (
         <div className="toast">
           <span className="toast-dot" />
